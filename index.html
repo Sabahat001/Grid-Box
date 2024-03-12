@@ -5,54 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        .grid-container {
-          display: grid;
-          grid-template-columns: auto auto auto;
-          /* background-color: #f1d117; */
-          padding: 10px;
-          grid-template-columns: 200px 200px 200px;
+        body {
+          font-family: Arial, sans-serif;
         }
-        .grid-item {
-          background-color: rgba(236, 150, 20, 0.8);
-          border: 1px solid rgba(0, 0, 0, 0.8);
-          padding: 20px;
-          font-size: 30px;
-          text-align: center;
+        #container {
+          display: flex;
+          flex-wrap: wrap;
+          width: 300px;
+          margin-bottom: 20px;
+        }
+        .block {
+          width: 30px;
+          height: 30px;
+          border: 1px solid #ccc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 2px;
           cursor: pointer;
         }
-        </style>
+      </style>
 </head>
 <body>
-    <div class="grid-container" id="grid">
-        <div class="grid-item" onclick="checkPin(1)">1</div>
-        <div class="grid-item" onclick="checkPin(2)">2</div>
-        <div class="grid-item" onclick="checkPin(3)">3</div>
-        <div class="grid-item" onclick="checkPin(4)">4</div>
-        <div class="grid-item" onclick="checkPin(5)">5</div>
-        <div class="grid-item" onclick="checkPin(6)">6</div>
-        <div class="grid-item" onclick="checkPin(7)">7</div>
-        <div class="grid-item" onclick="checkPin(8)">8</div>
-        <div class="grid-item" onclick="checkPin(9)">9</div>
+    <div id="container">
     </div>
-      <script>
-    let clickedCount = 0;
-    let clickedDigits = "";
-
-    function checkPin(digit) {
-        if (clickedCount < 4) {
-            clickedCount++;
-            clickedDigits += digit;
+    <button id="generateBtn">Generate Numbers</button>
+    <script>
+      const container = document.getElementById('container');
+      const generateBtn = document.getElementById('generateBtn');
+      let numbers = [];
+    
+      // Generate random numbers and update the blocks
+      generateBtn.addEventListener('click', () => {
+        numbers = [];
+        container.innerHTML = '';
+        for (let i = 0; i < 9; i++) {
+          const num = Math.floor(Math.random() * 9) + 1;
+          numbers.push(num);
+          const block = document.createElement('div');
+          block.classList.add('block');
+          block.innerText = num;
+          container.appendChild(block);
         }
-
-        if (clickedCount === 4) {
-            if (clickedDigits === "3421") {
-                alert("Welcome! Pin is correct.");
-            } else {
-                alert("Sorry, your pin is incorrect.");
-            }
-            location.reload();
+      });
+    
+      // Drag and drop functionality
+      let draggedNumber;
+      container.addEventListener('dragstart', (event) => {
+        draggedNumber = event.target.innerText;
+      });
+    
+      container.addEventListener('dragover', (event) => {
+        event.preventDefault();
+      });
+    
+      container.addEventListener('drop', (event) => {
+        event.preventDefault();
+        const droppedNumber = event.target.innerText;
+        event.target.innerText = draggedNumber;
+        event.target.classList.add('filled');
+        draggedNumber = droppedNumber;
+        checkOrder();
+      });
+    
+      // Check if the numbers are in ascending order
+      function checkOrder() {
+        const blocks = document.querySelectorAll('.block');
+        const currentOrder = Array.from(blocks).map(block => parseInt(block.innerText));
+        if (currentOrder.join('') === '123456789') {
+          alert('You Won!');
         }
-    }
-</script>
+      }
+    
+      // Timer functionality
+      const startTime = Date.now();
+      const endTime = startTime + 60000;
+    
+      function checkTime() {
+        const currentTime = Date.now();
+        if (currentTime >= endTime) {
+          alert('You Lost!');
+        }
+      }
+    
+      setInterval(checkTime, 1000); // Check time every second
+    </script>
 </body>
 </html>
